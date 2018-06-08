@@ -2,69 +2,42 @@
 
 const express = require("express");
 const cartRouter = express.Router();
+const pg = require("pg");
+const pool = require("../pg-connection-pool");
 
-const cart = [
-  {
-   product: "kale",
-   price: "1",
-   quantity: "5",
-   id: 0
-  },
-  {
-    product: "eggs",
-    price: "2",
-    quantity: "12",
-    id: 1
-   },
-   {
-     product: "chocolate",
-     price: "5",
-     quantity: "100",
-     id: 2
-    }
-];
-
-let idCount = 3;
-
+// GET
 cartRouter.get("/cart-items", (req, res) => {
   console.log("GET CART");
-  res.send(cart);
+  pool.query("SELECT * FROM shoppingcart ORDER BY id").then((result) => {
+    res.send(result.rows);
+  });
 });
-
+// POST
 cartRouter.post("/cart-items", (req, res) => {
   console.log("POST CART");
-  cart.push({
-    product: req.body.product,
-    price: req.body.price,
-    quantity: req.body.quantity,
-    id: idCount ++
-  })
-  res.send(cart);
+  console.log(req.body)
+  pool.query("INSERT INTO shoppingcart (product, price, quantity) VALUES ($1::text, $2::smallint, $3::smallint)", [req.body.product, req.body.price, req.body.quantity]).then(() => {
+    pool.query("SELECT * FROM shoppingcart ORDER BY id").then((result) => {
+      res.send(result.rows);
+    });
+  });
 });
-
+// DELETE
 cartRouter.delete("/cart-items/:id", (req, res) => {
-  console.log("DELETE CART");
-  for (let item of cart) {
-    if (item.id == req.params.id) {
-      cart.splice(cart.indexOf(item) , 1)
-    }
-  } // end for loop
-  res.send(cart);
+  pool.query("DELETE FROM shoppingcart WHERE id=$1::int", [req.params.id]).then(() => {
+    pool.query("SELECT * FROM shoppingcart ORDER BY id").then((result) => {
+      res.send(result.rows);
+    });
+  });
 });
-
+// PUT
 cartRouter.put("/cart-items/:id", (req, res) => {
   console.log("PUT CART");
-  for (let item of cart) {
-    if (item.id == req.params.id) {
-      cart.splice(cart.indexOf(item) , 1, {
-        product: req.body.product,
-        price: req.body.price,
-        quantity: req.body.quantity,
-        id: item.id
-      })
-    }
-  } // end for loop
-  res.send(cart);
+  pool.query("UPDATE shoppingcart SET product=$1::text, price=$2::smallint, quantity=$3::smallint WHERE id=$4::int", [req.body.product, req.body.price, req.body.quantity, req.params.id]).then(() => {
+    pool.query("SELECT * FROM shoppingcart ORDER BY id").then((result) => {
+      res.send(result.rows);
+    });
+  });
 });
 
 

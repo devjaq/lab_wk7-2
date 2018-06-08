@@ -7,17 +7,20 @@ const cartItems = {
       <input type="text" ng-blur="$ctrl.updateItem(item)" ng-model="item.product">
       <input type="text" ng-blur="$ctrl.updateItem(item)" ng-model="item.price">
       <input type="text" ng-blur="$ctrl.updateItem(item)" ng-model="item.quantity">
-      <a href="" ng-click="$ctrl.deleteItem(item.id);">Delete</a>
-    </section>
-  </div>
-
-  <form ng-submit="$ctrl.addItem($ctrl.newItem);">
-    <input type="text" ng-model="$ctrl.newItem.product" placeholder="Product Name">
-    <input type="text" ng-model="$ctrl.newItem.price" placeholder="Price">
-    <input type="text" ng-model="$ctrl.newItem.quantity" placeholder="Quantity">
-    <button>Submit</button>
-  </form>
-  `,
+      <i ng-click="$ctrl.deleteItem(item.id);" class="material-icons delete">
+      close
+      </i>
+      </section>
+      </div>
+      
+      <form ng-submit="$ctrl.addItem($ctrl.newItem);">
+      <input type="text" ng-model="$ctrl.newItem.product" placeholder="Product Name">
+      <input type="text" ng-model="$ctrl.newItem.price" placeholder="Price">
+      <input type="text" ng-model="$ctrl.newItem.quantity" placeholder="Quantity">
+      <button>Submit</button>
+      </form>
+      `,
+      // <a href="" ng-click="$ctrl.deleteItem(item.id);">Delete</a>
   controller: ["CartService", function(CartService) {
     const vm = this;
     CartService.getAllItems().then((response) => {
